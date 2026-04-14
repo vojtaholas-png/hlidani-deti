@@ -1,0 +1,2488 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hlídání dětí 👶</title>
+<meta name="theme-color" content="#F4845F">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Hlídání">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #FFF8F0;
+    --warm: #FFF0E0;
+    --peach: #FFD4A8;
+    --orange: #F4845F;
+    --orange-dark: #D96B42;
+    --brown: #8B5E3C;
+    --green: #7DC9A0;
+    --green-dark: #4FA878;
+    --red: #F47F7F;
+    --red-dark: #D94F4F;
+    --blue: #7EB8D4;
+    --text: #3D2B1F;
+    --text-light: #8B7355;
+    --shadow: rgba(61,43,31,0.12);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Quicksand', sans-serif;
+    background: var(--cream);
+    min-height: 100vh;
+    color: var(--text);
+    background-image: 
+      radial-gradient(circle at 10% 20%, rgba(244,132,95,0.08) 0%, transparent 50%),
+      radial-gradient(circle at 90% 80%, rgba(125,201,160,0.08) 0%, transparent 50%),
+      radial-gradient(circle at 50% 50%, rgba(255,208,168,0.05) 0%, transparent 70%);
+  }
+
+  /* ---- LOGIN SCREEN ---- */
+  #loginScreen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 20px;
+    gap: 24px;
+  }
+
+  .login-header {
+    text-align: center;
+  }
+
+  .login-emoji {
+    font-size: 64px;
+    display: block;
+    margin-bottom: 8px;
+    animation: bounce 2s ease-in-out infinite;
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  .login-title {
+    font-family: 'Nunito', sans-serif;
+    font-size: 28px;
+    font-weight: 900;
+    color: var(--brown);
+  }
+
+  .login-subtitle {
+    font-size: 14px;
+    color: var(--text-light);
+    margin-top: 4px;
+  }
+
+  .login-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    max-width: 340px;
+  }
+
+  .login-card {
+    background: white;
+    border-radius: 20px;
+    padding: 18px 20px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.2s;
+    box-shadow: 0 4px 16px var(--shadow);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .login-card:hover {
+    border-color: var(--peach);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px var(--shadow);
+  }
+
+  .login-card.selected {
+    border-color: var(--orange);
+    background: var(--warm);
+  }
+
+  .login-card-emoji { font-size: 28px; }
+
+  .login-card-name {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 16px;
+    color: var(--text);
+  }
+
+  .login-card-sub {
+    font-size: 12px;
+    color: var(--text-light);
+    margin-top: 2px;
+  }
+
+  .pin-section {
+    width: 100%;
+    max-width: 340px;
+    background: white;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 4px 16px var(--shadow);
+  }
+
+  .pin-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-light);
+    text-align: center;
+    margin-bottom: 12px;
+  }
+
+  .pin-dots {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .pin-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid var(--peach);
+    transition: all 0.2s;
+  }
+
+  .pin-dot.filled {
+    background: var(--orange);
+    border-color: var(--orange);
+    transform: scale(1.2);
+  }
+
+  .pin-keypad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+
+  .pin-key {
+    background: var(--cream);
+    border: none;
+    border-radius: 14px;
+    padding: 14px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.15s;
+    box-shadow: 0 2px 8px var(--shadow);
+  }
+
+  .pin-key:hover { background: var(--peach); transform: scale(1.05); }
+  .pin-key:active { transform: scale(0.95); }
+  .pin-key.del { font-size: 16px; color: var(--text-light); }
+  .pin-key.zero { grid-column: 2; }
+
+  .pin-error {
+    text-align: center;
+    color: var(--red-dark);
+    font-size: 13px;
+    margin-top: 10px;
+    font-weight: 600;
+    display: none;
+  }
+
+  /* ---- MAIN APP ---- */
+  #app { display: none; }
+
+  .top-bar {
+    background: white;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 12px var(--shadow);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .top-bar-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .top-bar-emoji { font-size: 24px; }
+
+  .top-bar-name {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 16px;
+    color: var(--brown);
+  }
+
+  .top-bar-role {
+    font-size: 11px;
+    color: var(--text-light);
+  }
+
+  .logout-btn {
+    background: var(--cream);
+    border: none;
+    border-radius: 12px;
+    padding: 8px 14px;
+    font-family: 'Quicksand', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-light);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .logout-btn:hover { background: var(--peach); color: var(--brown); }
+
+  .content { padding: 20px; max-width: 500px; margin: 0 auto; }
+
+  /* ---- TABS ---- */
+  .tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    background: white;
+    border-radius: 16px;
+    padding: 6px;
+    box-shadow: 0 2px 12px var(--shadow);
+  }
+
+  .tab {
+    flex: 1;
+    background: none;
+    border: none;
+    border-radius: 12px;
+    padding: 10px 6px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-light);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+  }
+
+  .tab.active {
+    background: var(--orange);
+    color: white;
+    box-shadow: 0 4px 12px rgba(244,132,95,0.3);
+  }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* ---- CARD ---- */
+  .card {
+    background: white;
+    border-radius: 20px;
+    padding: 18px;
+    box-shadow: 0 4px 16px var(--shadow);
+    margin-bottom: 14px;
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+
+  .card-title {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 16px;
+    color: var(--brown);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* ---- FORM ---- */
+  .form-group { margin-bottom: 14px; }
+
+  .form-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+  }
+
+  .form-input, .form-select, .form-textarea {
+    width: 100%;
+    border: 2px solid var(--peach);
+    border-radius: 12px;
+    padding: 11px 14px;
+    font-family: 'Quicksand', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text);
+    background: var(--cream);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .form-input:focus, .form-select:focus, .form-textarea:focus {
+    border-color: var(--orange);
+    background: white;
+  }
+
+  .form-textarea { resize: vertical; min-height: 80px; }
+
+  .children-select {
+    display: flex;
+    gap: 10px;
+  }
+
+  .child-toggle {
+    flex: 1;
+    padding: 10px;
+    border: 2px solid var(--peach);
+    border-radius: 12px;
+    background: var(--cream);
+    cursor: pointer;
+    text-align: center;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--text-light);
+    transition: all 0.2s;
+    user-select: none;
+  }
+
+  .child-toggle.selected {
+    border-color: var(--orange);
+    background: var(--warm);
+    color: var(--brown);
+  }
+
+  .guardian-select {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .guardian-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border: 2px solid var(--peach);
+    border-radius: 12px;
+    background: var(--cream);
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+  }
+
+  .guardian-option.selected {
+    border-color: var(--orange);
+    background: var(--warm);
+  }
+
+  .guardian-option-emoji { font-size: 20px; }
+
+  .guardian-option-name {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--text);
+  }
+
+  .btn {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 14px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 16px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-primary {
+    background: var(--orange);
+    color: white;
+    box-shadow: 0 4px 16px rgba(244,132,95,0.35);
+  }
+
+  .btn-primary:hover { background: var(--orange-dark); transform: translateY(-1px); }
+  .btn-primary:active { transform: translateY(0); }
+
+  .btn-approve {
+    background: var(--green);
+    color: white;
+    box-shadow: 0 4px 12px rgba(125,201,160,0.3);
+    flex: 1;
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  .btn-approve:hover { background: var(--green-dark); }
+
+  .btn-decline {
+    background: var(--red);
+    color: white;
+    box-shadow: 0 4px 12px rgba(244,127,127,0.3);
+    flex: 1;
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  .btn-decline:hover { background: var(--red-dark); }
+
+  /* ---- REQUEST ITEM ---- */
+  .request-item {
+    background: white;
+    border-radius: 18px;
+    padding: 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 4px 16px var(--shadow);
+    border-left: 4px solid var(--peach);
+    animation: slideIn 0.3s ease;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .request-item.pending { border-left-color: var(--orange); }
+  .request-item.approved { border-left-color: var(--green); }
+  .request-item.declined { border-left-color: var(--red); }
+
+  .request-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+  }
+
+  .request-date {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 17px;
+    color: var(--brown);
+  }
+
+  .request-time {
+    font-size: 13px;
+    color: var(--text-light);
+    margin-top: 2px;
+    font-weight: 600;
+  }
+
+  .status-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+  }
+
+  .status-pending { background: var(--warm); color: var(--orange-dark); }
+  .status-approved { background: #E8F8F0; color: var(--green-dark); }
+  .status-declined { background: #FFF0F0; color: var(--red-dark); }
+
+  .request-children {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+  }
+
+  .child-badge {
+    background: var(--warm);
+    color: var(--orange-dark);
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .request-note {
+    font-size: 13px;
+    color: var(--text-light);
+    margin-bottom: 10px;
+    line-height: 1.4;
+  }
+
+  .request-guardian {
+    font-size: 12px;
+    color: var(--text-light);
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+
+  .request-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .ical-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--blue);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 8px 14px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 8px;
+  }
+
+  .ical-btn:hover { opacity: 0.85; }
+
+  .whatsapp-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #25D366;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 8px 14px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 8px;
+    margin-left: 8px;
+    text-decoration: none;
+  }
+
+  .whatsapp-btn:hover { opacity: 0.85; }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-light);
+  }
+
+  .empty-emoji { font-size: 48px; margin-bottom: 12px; }
+
+  .empty-text {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+  }
+
+  .section-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+    margin-top: 6px;
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--brown);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 16px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    z-index: 9999;
+    transition: transform 0.3s ease;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  }
+
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  .loading {
+    text-align: center;
+    padding: 30px;
+    color: var(--text-light);
+    font-weight: 600;
+  }
+
+  .pin-change-row {
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--peach);
+  }
+
+  .pin-change-row:last-child { border-bottom: none; margin-bottom: 0; }
+
+  .pin-change-name {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 14px;
+    color: var(--brown);
+    margin-bottom: 8px;
+  }
+
+  .pin-change-inputs {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .pin-input-field {
+    width: 90px;
+    border: 2px solid var(--peach);
+    border-radius: 10px;
+    padding: 8px 12px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    text-align: center;
+    letter-spacing: 4px;
+    color: var(--text);
+    background: var(--cream);
+    outline: none;
+  }
+
+  .pin-input-field:focus { border-color: var(--orange); background: white; }
+
+  .btn-small {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+    background: var(--orange);
+    color: white;
+    transition: all 0.2s;
+  }
+
+  .btn-small:hover { background: var(--orange-dark); }
+
+  /* Admin overview */
+  .guardian-group {
+    margin-bottom: 20px;
+  }
+
+  .guardian-group-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 15px;
+    color: var(--brown);
+  }
+
+  .count-badge {
+    background: var(--orange);
+    color: white;
+    border-radius: 20px;
+    padding: 2px 8px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  /* ---- CALENDAR ---- */
+  .cal-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+
+  .cal-nav-btn {
+    background: white;
+    border: 2px solid var(--peach);
+    border-radius: 12px;
+    width: 40px; height: 40px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .cal-nav-btn:hover { background: var(--peach); }
+
+  .cal-month-label {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 18px;
+    color: var(--brown);
+    text-align: center;
+  }
+
+  .cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-bottom: 16px;
+  }
+
+  .cal-day-name {
+    text-align: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-light);
+    padding: 4px 0;
+  }
+
+  .cal-day {
+    aspect-ratio: 1;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s;
+    position: relative;
+    background: white;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--text);
+    border: 2px solid transparent;
+  }
+
+  .cal-day:hover { border-color: var(--peach); transform: scale(1.05); }
+  .cal-day.empty { background: transparent; cursor: default; }
+  .cal-day.empty:hover { transform: none; border-color: transparent; }
+  .cal-day.today { border-color: var(--orange); color: var(--orange); }
+
+  .cal-day.has-pending { background: #FFF3E0; }
+  .cal-day.has-approved { background: #E8F8F0; }
+  .cal-day.has-busy { background: #FFF0F0; }
+  .cal-day.has-approved.has-busy { background: linear-gradient(135deg, #E8F8F0 50%, #FFF0F0 50%); }
+
+  .cal-dots {
+    display: flex;
+    gap: 2px;
+    margin-top: 2px;
+  }
+
+  .cal-dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+  }
+
+  .cal-dot.pending { background: var(--orange); }
+  .cal-dot.approved { background: var(--green-dark); }
+  .cal-dot.busy { background: var(--red); }
+
+  .cal-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .cal-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-light);
+  }
+
+  /* Day detail modal */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(61,43,31,0.4);
+    z-index: 500;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    animation: fadeIn 0.2s;
+  }
+
+  @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+
+  .modal-sheet {
+    background: var(--cream);
+    border-radius: 24px 24px 0 0;
+    padding: 20px;
+    width: 100%;
+    max-width: 500px;
+    max-height: 80vh;
+    overflow-y: auto;
+    animation: slideUp 0.25s ease;
+  }
+
+  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+  .modal-handle {
+    width: 40px; height: 4px;
+    background: var(--peach);
+    border-radius: 2px;
+    margin: 0 auto 16px;
+  }
+
+  .modal-date {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 18px;
+    color: var(--brown);
+    margin-bottom: 14px;
+    text-align: center;
+  }
+
+  .modal-section-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+    margin-top: 14px;
+  }
+
+  .modal-event {
+    background: white;
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    border-left: 3px solid var(--peach);
+  }
+
+  .modal-event.pending { border-left-color: var(--orange); }
+  .modal-event.approved { border-left-color: var(--green-dark); }
+  .modal-event.busy { border-left-color: var(--red); }
+
+  .modal-event-title {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 14px;
+    color: var(--text);
+  }
+
+  .modal-event-sub {
+    font-size: 12px;
+    color: var(--text-light);
+    margin-top: 3px;
+  }
+
+  .modal-close {
+    width: 100%;
+    margin-top: 16px;
+    padding: 12px;
+    background: var(--peach);
+    border: none;
+    border-radius: 14px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 15px;
+    color: var(--brown);
+    cursor: pointer;
+  }
+
+  .btn-add-busy {
+    width: 100%;
+    padding: 12px;
+    background: var(--red);
+    border: none;
+    border-radius: 14px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 14px;
+    color: white;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: all 0.2s;
+  }
+
+  .btn-add-busy:hover { background: var(--red-dark); }
+
+  .btn-delete-busy {
+    background: none;
+    border: none;
+    color: var(--red-dark);
+    font-size: 16px;
+    cursor: pointer;
+    padding: 0 4px;
+    float: right;
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="loginScreen">
+  <div class="login-header">
+    <span class="login-emoji">🏠</span>
+    <div class="login-title">Hlídání dětí</div>
+    <div class="login-subtitle">Rodinný plánovač hlídání</div>
+  </div>
+
+  <div class="login-cards" id="loginCards">
+    <div class="login-card" onclick="selectUser('admin')" id="card-admin">
+      <span class="login-card-emoji">👨‍👩‍👧‍👦</span>
+      <div>
+        <div class="login-card-name">Rodiče</div>
+        <div class="login-card-sub">Vojta & Eva</div>
+      </div>
+    </div>
+    <div class="login-card" onclick="selectUser('babicka-vera')" id="card-babicka-vera">
+      <span class="login-card-emoji">👴🏻👵🏻</span>
+      <div>
+        <div class="login-card-name">Babička Věra & Děda Petr</div>
+      </div>
+    </div>
+    <div class="login-card" onclick="selectUser('babicka-petra')" id="card-babicka-petra">
+      <span class="login-card-emoji">👴🏻👵🏻</span>
+      <div>
+        <div class="login-card-name">Babička Petra & Děda Pavel</div>
+      </div>
+    </div>
+    <div class="login-card" onclick="selectUser('babicka-pavla')" id="card-babicka-pavla">
+      <span class="login-card-emoji">👵🏻</span>
+      <div>
+        <div class="login-card-name">Babička Pavla</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pin-section" id="pinSection" style="display:none;">
+    <div class="pin-label" id="pinLabel">Zadej PIN</div>
+    <div class="pin-dots">
+      <div class="pin-dot" id="dot0"></div>
+      <div class="pin-dot" id="dot1"></div>
+      <div class="pin-dot" id="dot2"></div>
+      <div class="pin-dot" id="dot3"></div>
+    </div>
+    <div class="pin-keypad">
+      <button class="pin-key" onclick="pinKey('1')">1</button>
+      <button class="pin-key" onclick="pinKey('2')">2</button>
+      <button class="pin-key" onclick="pinKey('3')">3</button>
+      <button class="pin-key" onclick="pinKey('4')">4</button>
+      <button class="pin-key" onclick="pinKey('5')">5</button>
+      <button class="pin-key" onclick="pinKey('6')">6</button>
+      <button class="pin-key" onclick="pinKey('7')">7</button>
+      <button class="pin-key" onclick="pinKey('8')">8</button>
+      <button class="pin-key" onclick="pinKey('9')">9</button>
+      <button class="pin-key del" onclick="pinDel()">⌫</button>
+      <button class="pin-key zero" onclick="pinKey('0')">0</button>
+    </div>
+    <div class="pin-error" id="pinError">Špatný PIN, zkus to znovu</div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app">
+  <div class="top-bar">
+    <div class="top-bar-left">
+      <span class="top-bar-emoji" id="topEmoji">👶</span>
+      <div>
+        <div class="top-bar-name" id="topName">Hlídání</div>
+        <div class="top-bar-role" id="topRole">-</div>
+      </div>
+    </div>
+    <button class="logout-btn" onclick="logout()">Odhlásit</button>
+  </div>
+
+  <div class="content">
+    <!-- TABS for admin -->
+    <div class="tabs" id="adminTabs" style="display:none;">
+      <button class="tab active" onclick="switchTab('nova')" id="tab-nova">➕ Nová</button>
+      <button class="tab" onclick="switchTab('kalendar')" id="tab-kalendar">📅 Kalendář</button>
+      <button class="tab" onclick="switchTab('prehled')" id="tab-prehled">📋 Přehled</button>
+      <button class="tab" onclick="switchTab('nastaveni')" id="tab-nastaveni">⚙️ PIN</button>
+    </div>
+
+    <!-- NEW REQUEST TAB (admin) -->
+    <div class="tab-content active" id="tab-nova-content">
+      <div class="card">
+        <div class="card-title">🗓️ Nová žádost o hlídání</div>
+        <div style="height:14px;"></div>
+
+        <div class="form-group">
+          <label class="form-label">Datum od – do</label>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <input type="date" class="form-input" id="reqDateFrom">
+            <span style="color:var(--text-light); font-weight:700; flex-shrink:0;">–</span>
+            <input type="date" class="form-input" id="reqDateTo">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Čas od – do (každý den)</label>
+          <div style="display:flex; gap:8px;">
+            <input type="time" class="form-input" id="reqTimeFrom">
+            <input type="time" class="form-input" id="reqTimeTo">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Kdo bude hlídáno</label>
+          <div class="children-select">
+            <div class="child-toggle" onclick="toggleChild('tonik')" id="toggle-tonik">🧒 Toník</div>
+            <div class="child-toggle" onclick="toggleChild('eliska')" id="toggle-eliska">👧 Eliška</div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Komu posílám žádost</label>
+          <div class="guardian-select" id="guardianSelect">
+            <div class="guardian-option" onclick="selectGuardian('babicka-vera')" id="go-babicka-vera">
+              <span class="guardian-option-emoji">👵</span>
+              <span class="guardian-option-name">Babička Věra & Děda Petr</span>
+            </div>
+            <div class="guardian-option" onclick="selectGuardian('babicka-petra')" id="go-babicka-petra">
+              <span class="guardian-option-emoji">👴👵</span>
+              <span class="guardian-option-name">Babička Petra & Děda Pavel</span>
+            </div>
+            <div class="guardian-option" onclick="selectGuardian('babicka-pavla')" id="go-babicka-pavla">
+              <span class="guardian-option-emoji">👵</span>
+              <span class="guardian-option-name">Babička Pavla</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Poznámka (nepovinné)</label>
+          <textarea class="form-textarea" id="reqNote" placeholder="Např. Toník má alergie, dejte mu svačinu..."></textarea>
+        </div>
+
+        <button class="btn btn-primary" onclick="sendRequest()">📨 Odeslat žádost</button>
+      </div>
+    </div>
+
+    <!-- CALENDAR TAB (admin) -->
+    <div class="tab-content" id="tab-kalendar-content">
+      <div id="adminCalendar"></div>
+    </div>
+
+    <!-- OVERVIEW TAB (admin) -->
+    <div class="tab-content" id="tab-prehled-content">
+      <div id="adminOverview"><div class="loading">Načítám...</div></div>
+    </div>
+
+    <!-- NASTAVENI TAB (admin - change PINs) -->
+    <div class="tab-content" id="tab-nastaveni-content">
+      <div class="card">
+        <div class="card-title">🔐 Změna PINů</div>
+        <div style="height:14px;"></div>
+        <div id="pinChangeList"></div>
+      </div>
+    </div>
+
+    <!-- GUARDIAN VIEW -->
+    <div id="guardianView" style="display:none;">
+      <div class="tabs" style="margin-bottom:20px;">
+        <button class="tab active" onclick="switchGuardianTab('zadosti')" id="gtab-zadosti">📋 Žádosti</button>
+        <button class="tab" onclick="switchGuardianTab('kalendar')" id="gtab-kalendar">📅 Kalendář</button>
+        <button class="tab" onclick="switchGuardianTab('pin')" id="gtab-pin">🔐 PIN</button>
+      </div>
+      <div id="guardianRequests"></div>
+      <div id="guardianKalendar" style="display:none;">
+        <div id="guardianCalendar"></div>
+      </div>
+      <div id="guardianPinChange" style="display:none;">
+        <div class="card">
+          <div class="card-title">🔐 Změna PINu</div>
+          <div style="height:14px;"></div>
+          <div id="guardianPinForm"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Firebase compat -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js">
+// ---- CALENDAR ----
+let calYear, calMonth, calRequests = [], calBusy = [], calUnsubReq = null, calUnsubBusy = null;
+
+function initCalendar(mode) {
+  const now = new Date();
+  calYear = now.getFullYear();
+  calMonth = now.getMonth();
+  const targetEl = mode === 'admin' ? 'adminCalendar' : 'guardianCalendar';
+  document.getElementById(targetEl).innerHTML = '<div class="loading">Načítám...</div>';
+
+  // Load requests
+  let reqQuery = db.collection('requests');
+  if (mode === 'guardian') reqQuery = reqQuery.where('guardian', '==', currentUser);
+
+  if (calUnsubReq) calUnsubReq();
+  calUnsubReq = reqQuery.onSnapshot(snap => {
+    calRequests = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderCalendar(mode);
+  });
+
+  // Load busy slots
+  if (calUnsubBusy) calUnsubBusy();
+  let busyQuery = db.collection('busy');
+  if (mode === 'guardian') busyQuery = busyQuery.where('guardian', '==', currentUser);
+  calUnsubBusy = busyQuery.onSnapshot(snap => {
+    calBusy = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderCalendar(mode);
+  });
+}
+
+function renderCalendar(mode) {
+  const targetEl = mode === 'admin' ? 'adminCalendar' : 'guardianCalendar';
+  const el = document.getElementById(targetEl);
+  if (!el) return;
+
+  const today = new Date();
+  const firstDay = new Date(calYear, calMonth, 1);
+  const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+  // Start on Monday (0=Sun → shift)
+  let startDow = firstDay.getDay(); // 0=Sun
+  startDow = startDow === 0 ? 6 : startDow - 1; // Mon=0
+
+  const monthNames = ['Leden','Únor','Březen','Duben','Květen','Červen','Červenec','Srpen','Září','Říjen','Listopad','Prosinec'];
+
+  // Build day data map
+  const dayMap = {}; // "YYYY-MM-DD" -> {pending, approved, busy:[]}
+
+  calRequests.forEach(r => {
+    if (!r.dateFrom) return;
+    const from = new Date(r.dateFrom);
+    const to = new Date(r.dateTo || r.dateFrom);
+    for (let d = new Date(from); d <= to; d.setDate(d.getDate() + 1)) {
+      const key = dateToKey(d);
+      if (!dayMap[key]) dayMap[key] = { pending: false, approved: false, busy: [] };
+      if (r.status === 'pending') dayMap[key].pending = true;
+      if (r.status === 'approved') dayMap[key].approved = true;
+    }
+  });
+
+  calBusy.forEach(b => {
+    if (!b.dateFrom) return;
+    const from = new Date(b.dateFrom);
+    const to = new Date(b.dateTo || b.dateFrom);
+    for (let d = new Date(from); d <= to; d.setDate(d.getDate() + 1)) {
+      const key = dateToKey(d);
+      if (!dayMap[key]) dayMap[key] = { pending: false, approved: false, busy: [] };
+      dayMap[key].busy.push(b);
+    }
+  });
+
+  let html = `
+    <div class="card">
+      <div class="cal-nav">
+        <button class="cal-nav-btn" onclick="calPrev('${mode}')">‹</button>
+        <div class="cal-month-label">${monthNames[calMonth]} ${calYear}</div>
+        <button class="cal-nav-btn" onclick="calNext('${mode}')">›</button>
+      </div>
+      <div class="cal-legend">
+        <div class="cal-legend-item"><div class="cal-dot pending"></div> Čeká</div>
+        <div class="cal-legend-item"><div class="cal-dot approved"></div> Schváleno</div>
+        <div class="cal-legend-item"><div class="cal-dot busy"></div> Obsazeno</div>
+      </div>
+      <div class="cal-grid">
+        <div class="cal-day-name">Po</div>
+        <div class="cal-day-name">Út</div>
+        <div class="cal-day-name">St</div>
+        <div class="cal-day-name">Čt</div>
+        <div class="cal-day-name">Pá</div>
+        <div class="cal-day-name">So</div>
+        <div class="cal-day-name">Ne</div>
+  `;
+
+  // Empty cells before first day
+  for (let i = 0; i < startDow; i++) {
+    html += '<div class="cal-day empty"></div>';
+  }
+
+  for (let day = 1; day <= daysInMonth; day++) {
+    const dateObj = new Date(calYear, calMonth, day);
+    const key = dateToKey(dateObj);
+    const isToday = dateObj.toDateString() === today.toDateString();
+    const data = dayMap[key] || {};
+
+    let classes = 'cal-day';
+    if (isToday) classes += ' today';
+    if (data.pending) classes += ' has-pending';
+    if (data.approved) classes += ' has-approved';
+    if ((data.busy||[]).length > 0) classes += ' has-busy';
+
+    let dots = '';
+    if (data.pending) dots += '<div class="cal-dot pending"></div>';
+    if (data.approved) dots += '<div class="cal-dot approved"></div>';
+    if ((data.busy||[]).length > 0) dots += '<div class="cal-dot busy"></div>';
+
+    html += `<div class="${classes}" onclick="openDayModal('${key}', '${mode}')">
+      ${day}
+      <div class="cal-dots">${dots}</div>
+    </div>`;
+  }
+
+  html += `</div>`;
+
+  // Add busy button for guardians
+  if (mode === 'guardian') {
+    html += `<button class="btn-add-busy" onclick="openAddBusyModal()">🚫 Přidat obsazenost</button>`;
+  }
+
+  html += `</div>`;
+  el.innerHTML = html;
+}
+
+function calPrev(mode) { calMonth--; if (calMonth < 0) { calMonth = 11; calYear--; } renderCalendar(mode); }
+function calNext(mode) { calMonth++; if (calMonth > 11) { calMonth = 0; calYear++; } renderCalendar(mode); }
+
+function dateToKey(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,'0');
+  const dd = String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${dd}`;
+}
+
+// Day modal
+function openDayModal(key, mode) {
+  const dayRequests = calRequests.filter(r => {
+    const from = r.dateFrom || r.date;
+    const to = r.dateTo || from;
+    return key >= from && key <= to;
+  });
+  const dayBusy = calBusy.filter(b => {
+    const from = b.dateFrom;
+    const to = b.dateTo || from;
+    return key >= from && key <= to;
+  });
+
+  const dateLabel = formatDate(key);
+  const GUARDIAN_NAMES_LOCAL = {
+    'babicka-vera': 'Babička Věra & Děda Petr',
+    'babicka-petra': 'Babička Petra & Děda Pavel',
+    'babicka-pavla': 'Babička Pavla',
+  };
+
+  let html = `<div class="modal-overlay" onclick="closeModal(event)" id="dayModal">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-date">📅 ${dateLabel}</div>`;
+
+  if (dayRequests.length > 0) {
+    html += `<div class="modal-section-label">Hlídání</div>`;
+    dayRequests.forEach(r => {
+      const children = (r.children||[]).map(c => c==='tonik'?'Toník':'Eliška').join(' a ');
+      const guardian = mode === 'admin' ? ` • ${GUARDIAN_NAMES_LOCAL[r.guardian]||r.guardian}` : '';
+      const statusLabel = {pending:'⏳ Čeká', approved:'✅ Schváleno', declined:'❌ Odmítnuto'}[r.status]||r.status;
+      html += `<div class="modal-event ${r.status}">
+        <div class="modal-event-title">${children}</div>
+        <div class="modal-event-sub">${r.timeFrom||'?'}–${r.timeTo||'?'}${guardian} • ${statusLabel}</div>
+      </div>`;
+    });
+  }
+
+  if (dayBusy.length > 0) {
+    html += `<div class="modal-section-label">Obsazeno</div>`;
+    dayBusy.forEach(b => {
+      const guardian = mode === 'admin' ? ` • ${GUARDIAN_NAMES_LOCAL[b.guardian]||b.guardian}` : '';
+      const canDelete = mode === 'guardian' && b.guardian === currentUser;
+      html += `<div class="modal-event busy">
+        <div class="modal-event-title">
+          🚫 ${b.label||'Obsazeno'}
+          ${canDelete ? `<button class="btn-delete-busy" onclick="deleteBusy('${b.id}')">🗑</button>` : ''}
+        </div>
+        <div class="modal-event-sub">${guardian}</div>
+      </div>`;
+    });
+  }
+
+  if (dayRequests.length === 0 && dayBusy.length === 0) {
+    html += `<div style="text-align:center; color:var(--text-light); padding:20px 0; font-weight:600;">Nic naplánováno</div>`;
+  }
+
+  if (mode === 'guardian') {
+    html += `<button class="btn-add-busy" onclick="openAddBusyModalForDate('${key}')">🚫 Přidat obsazenost tento den</button>`;
+  }
+
+  html += `<button class="modal-close" onclick="document.getElementById('dayModal').remove()">Zavřít</button>
+    </div>
+  </div>`;
+
+  document.body.insertAdjacentHTML('beforeend', html);
+}
+
+function closeModal(e) {
+  if (e.target.id === 'dayModal') document.getElementById('dayModal').remove();
+}
+
+// Add busy modal
+function openAddBusyModal() {
+  openAddBusyModalForDate('');
+}
+
+function openAddBusyModalForDate(prefillDate) {
+  if (document.getElementById('dayModal')) document.getElementById('dayModal').remove();
+  const html = `<div class="modal-overlay" id="busyModal">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-date">🚫 Přidat obsazenost</div>
+      <div class="form-group">
+        <label class="form-label">Popis (nepovinné)</label>
+        <input type="text" class="form-input" id="busyLabel" placeholder="Dovolená, lékař, návštěva...">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Datum od – do</label>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <input type="date" class="form-input" id="busyFrom" value="${prefillDate}">
+          <span style="color:var(--text-light); font-weight:700; flex-shrink:0;">–</span>
+          <input type="date" class="form-input" id="busyTo" value="${prefillDate}">
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="saveBusy()" style="margin-top:8px;">💾 Uložit</button>
+      <button class="modal-close" onclick="document.getElementById('busyModal').remove()" style="margin-top:8px;">Zrušit</button>
+    </div>
+  </div>`;
+  document.body.insertAdjacentHTML('beforeend', html);
+}
+
+async function saveBusy() {
+  const label = document.getElementById('busyLabel').value.trim() || 'Obsazeno';
+  const dateFrom = document.getElementById('busyFrom').value;
+  const dateTo = document.getElementById('busyTo').value;
+  if (!dateFrom || !dateTo) return showToast('Vyber datum!');
+  if (dateTo < dateFrom) return showToast('Datum do musí být po od!');
+  try {
+    await db.collection('busy').add({
+      guardian: currentUser, label, dateFrom, dateTo,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    document.getElementById('busyModal').remove();
+    showToast('✅ Obsazenost přidána!');
+  } catch(e) { showToast('Chyba 😢'); }
+}
+
+async function deleteBusy(id) {
+  try {
+    await db.collection('busy').doc(id).delete();
+    if (document.getElementById('dayModal')) document.getElementById('dayModal').remove();
+    showToast('🗑 Odstraněno');
+  } catch(e) { showToast('Chyba 😢'); }
+}
+
+
+// PWA Service Worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  });
+}
+</script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js">
+// ---- CALENDAR ----
+let calYear, calMonth, calRequests = [], calBusy = [], calUnsubReq = null, calUnsubBusy = null;
+
+function initCalendar(mode) {
+  const now = new Date();
+  calYear = now.getFullYear();
+  calMonth = now.getMonth();
+  const targetEl = mode === 'admin' ? 'adminCalendar' : 'guardianCalendar';
+  document.getElementById(targetEl).innerHTML = '<div class="loading">Načítám...</div>';
+
+  // Load requests
+  let reqQuery = db.collection('requests');
+  if (mode === 'guardian') reqQuery = reqQuery.where('guardian', '==', currentUser);
+
+  if (calUnsubReq) calUnsubReq();
+  calUnsubReq = reqQuery.onSnapshot(snap => {
+    calRequests = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderCalendar(mode);
+  });
+
+  // Load busy slots
+  if (calUnsubBusy) calUnsubBusy();
+  let busyQuery = db.collection('busy');
+  if (mode === 'guardian') busyQuery = busyQuery.where('guardian', '==', currentUser);
+  calUnsubBusy = busyQuery.onSnapshot(snap => {
+    calBusy = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderCalendar(mode);
+  });
+}
+
+function renderCalendar(mode) {
+  const targetEl = mode === 'admin' ? 'adminCalendar' : 'guardianCalendar';
+  const el = document.getElementById(targetEl);
+  if (!el) return;
+
+  const today = new Date();
+  const firstDay = new Date(calYear, calMonth, 1);
+  const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+  // Start on Monday (0=Sun → shift)
+  let startDow = firstDay.getDay(); // 0=Sun
+  startDow = startDow === 0 ? 6 : startDow - 1; // Mon=0
+
+  const monthNames = ['Leden','Únor','Březen','Duben','Květen','Červen','Červenec','Srpen','Září','Říjen','Listopad','Prosinec'];
+
+  // Build day data map
+  const dayMap = {}; // "YYYY-MM-DD" -> {pending, approved, busy:[]}
+
+  calRequests.forEach(r => {
+    if (!r.dateFrom) return;
+    const from = new Date(r.dateFrom);
+    const to = new Date(r.dateTo || r.dateFrom);
+    for (let d = new Date(from); d <= to; d.setDate(d.getDate() + 1)) {
+      const key = dateToKey(d);
+      if (!dayMap[key]) dayMap[key] = { pending: false, approved: false, busy: [] };
+      if (r.status === 'pending') dayMap[key].pending = true;
+      if (r.status === 'approved') dayMap[key].approved = true;
+    }
+  });
+
+  calBusy.forEach(b => {
+    if (!b.dateFrom) return;
+    const from = new Date(b.dateFrom);
+    const to = new Date(b.dateTo || b.dateFrom);
+    for (let d = new Date(from); d <= to; d.setDate(d.getDate() + 1)) {
+      const key = dateToKey(d);
+      if (!dayMap[key]) dayMap[key] = { pending: false, approved: false, busy: [] };
+      dayMap[key].busy.push(b);
+    }
+  });
+
+  let html = `
+    <div class="card">
+      <div class="cal-nav">
+        <button class="cal-nav-btn" onclick="calPrev('${mode}')">‹</button>
+        <div class="cal-month-label">${monthNames[calMonth]} ${calYear}</div>
+        <button class="cal-nav-btn" onclick="calNext('${mode}')">›</button>
+      </div>
+      <div class="cal-legend">
+        <div class="cal-legend-item"><div class="cal-dot pending"></div> Čeká</div>
+        <div class="cal-legend-item"><div class="cal-dot approved"></div> Schváleno</div>
+        <div class="cal-legend-item"><div class="cal-dot busy"></div> Obsazeno</div>
+      </div>
+      <div class="cal-grid">
+        <div class="cal-day-name">Po</div>
+        <div class="cal-day-name">Út</div>
+        <div class="cal-day-name">St</div>
+        <div class="cal-day-name">Čt</div>
+        <div class="cal-day-name">Pá</div>
+        <div class="cal-day-name">So</div>
+        <div class="cal-day-name">Ne</div>
+  `;
+
+  // Empty cells before first day
+  for (let i = 0; i < startDow; i++) {
+    html += '<div class="cal-day empty"></div>';
+  }
+
+  for (let day = 1; day <= daysInMonth; day++) {
+    const dateObj = new Date(calYear, calMonth, day);
+    const key = dateToKey(dateObj);
+    const isToday = dateObj.toDateString() === today.toDateString();
+    const data = dayMap[key] || {};
+
+    let classes = 'cal-day';
+    if (isToday) classes += ' today';
+    if (data.pending) classes += ' has-pending';
+    if (data.approved) classes += ' has-approved';
+    if ((data.busy||[]).length > 0) classes += ' has-busy';
+
+    let dots = '';
+    if (data.pending) dots += '<div class="cal-dot pending"></div>';
+    if (data.approved) dots += '<div class="cal-dot approved"></div>';
+    if ((data.busy||[]).length > 0) dots += '<div class="cal-dot busy"></div>';
+
+    html += `<div class="${classes}" onclick="openDayModal('${key}', '${mode}')">
+      ${day}
+      <div class="cal-dots">${dots}</div>
+    </div>`;
+  }
+
+  html += `</div>`;
+
+  // Add busy button for guardians
+  if (mode === 'guardian') {
+    html += `<button class="btn-add-busy" onclick="openAddBusyModal()">🚫 Přidat obsazenost</button>`;
+  }
+
+  html += `</div>`;
+  el.innerHTML = html;
+}
+
+function calPrev(mode) { calMonth--; if (calMonth < 0) { calMonth = 11; calYear--; } renderCalendar(mode); }
+function calNext(mode) { calMonth++; if (calMonth > 11) { calMonth = 0; calYear++; } renderCalendar(mode); }
+
+function dateToKey(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,'0');
+  const dd = String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${dd}`;
+}
+
+// Day modal
+function openDayModal(key, mode) {
+  const dayRequests = calRequests.filter(r => {
+    const from = r.dateFrom || r.date;
+    const to = r.dateTo || from;
+    return key >= from && key <= to;
+  });
+  const dayBusy = calBusy.filter(b => {
+    const from = b.dateFrom;
+    const to = b.dateTo || from;
+    return key >= from && key <= to;
+  });
+
+  const dateLabel = formatDate(key);
+  const GUARDIAN_NAMES_LOCAL = {
+    'babicka-vera': 'Babička Věra & Děda Petr',
+    'babicka-petra': 'Babička Petra & Děda Pavel',
+    'babicka-pavla': 'Babička Pavla',
+  };
+
+  let html = `<div class="modal-overlay" onclick="closeModal(event)" id="dayModal">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-date">📅 ${dateLabel}</div>`;
+
+  if (dayRequests.length > 0) {
+    html += `<div class="modal-section-label">Hlídání</div>`;
+    dayRequests.forEach(r => {
+      const children = (r.children||[]).map(c => c==='tonik'?'Toník':'Eliška').join(' a ');
+      const guardian = mode === 'admin' ? ` • ${GUARDIAN_NAMES_LOCAL[r.guardian]||r.guardian}` : '';
+      const statusLabel = {pending:'⏳ Čeká', approved:'✅ Schváleno', declined:'❌ Odmítnuto'}[r.status]||r.status;
+      html += `<div class="modal-event ${r.status}">
+        <div class="modal-event-title">${children}</div>
+        <div class="modal-event-sub">${r.timeFrom||'?'}–${r.timeTo||'?'}${guardian} • ${statusLabel}</div>
+      </div>`;
+    });
+  }
+
+  if (dayBusy.length > 0) {
+    html += `<div class="modal-section-label">Obsazeno</div>`;
+    dayBusy.forEach(b => {
+      const guardian = mode === 'admin' ? ` • ${GUARDIAN_NAMES_LOCAL[b.guardian]||b.guardian}` : '';
+      const canDelete = mode === 'guardian' && b.guardian === currentUser;
+      html += `<div class="modal-event busy">
+        <div class="modal-event-title">
+          🚫 ${b.label||'Obsazeno'}
+          ${canDelete ? `<button class="btn-delete-busy" onclick="deleteBusy('${b.id}')">🗑</button>` : ''}
+        </div>
+        <div class="modal-event-sub">${guardian}</div>
+      </div>`;
+    });
+  }
+
+  if (dayRequests.length === 0 && dayBusy.length === 0) {
+    html += `<div style="text-align:center; color:var(--text-light); padding:20px 0; font-weight:600;">Nic naplánováno</div>`;
+  }
+
+  if (mode === 'guardian') {
+    html += `<button class="btn-add-busy" onclick="openAddBusyModalForDate('${key}')">🚫 Přidat obsazenost tento den</button>`;
+  }
+
+  html += `<button class="modal-close" onclick="document.getElementById('dayModal').remove()">Zavřít</button>
+    </div>
+  </div>`;
+
+  document.body.insertAdjacentHTML('beforeend', html);
+}
+
+function closeModal(e) {
+  if (e.target.id === 'dayModal') document.getElementById('dayModal').remove();
+}
+
+// Add busy modal
+function openAddBusyModal() {
+  openAddBusyModalForDate('');
+}
+
+function openAddBusyModalForDate(prefillDate) {
+  if (document.getElementById('dayModal')) document.getElementById('dayModal').remove();
+  const html = `<div class="modal-overlay" id="busyModal">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-date">🚫 Přidat obsazenost</div>
+      <div class="form-group">
+        <label class="form-label">Popis (nepovinné)</label>
+        <input type="text" class="form-input" id="busyLabel" placeholder="Dovolená, lékař, návštěva...">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Datum od – do</label>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <input type="date" class="form-input" id="busyFrom" value="${prefillDate}">
+          <span style="color:var(--text-light); font-weight:700; flex-shrink:0;">–</span>
+          <input type="date" class="form-input" id="busyTo" value="${prefillDate}">
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="saveBusy()" style="margin-top:8px;">💾 Uložit</button>
+      <button class="modal-close" onclick="document.getElementById('busyModal').remove()" style="margin-top:8px;">Zrušit</button>
+    </div>
+  </div>`;
+  document.body.insertAdjacentHTML('beforeend', html);
+}
+
+async function saveBusy() {
+  const label = document.getElementById('busyLabel').value.trim() || 'Obsazeno';
+  const dateFrom = document.getElementById('busyFrom').value;
+  const dateTo = document.getElementById('busyTo').value;
+  if (!dateFrom || !dateTo) return showToast('Vyber datum!');
+  if (dateTo < dateFrom) return showToast('Datum do musí být po od!');
+  try {
+    await db.collection('busy').add({
+      guardian: currentUser, label, dateFrom, dateTo,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    document.getElementById('busyModal').remove();
+    showToast('✅ Obsazenost přidána!');
+  } catch(e) { showToast('Chyba 😢'); }
+}
+
+async function deleteBusy(id) {
+  try {
+    await db.collection('busy').doc(id).delete();
+    if (document.getElementById('dayModal')) document.getElementById('dayModal').remove();
+    showToast('🗑 Odstraněno');
+  } catch(e) { showToast('Chyba 😢'); }
+}
+
+
+// PWA Service Worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  });
+}
+</script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyCch5q_waAKfv-pQZERsHIeB3gI6RutSyU",
+  authDomain: "hlidani-deti.firebaseapp.com",
+  projectId: "hlidani-deti",
+  storageBucket: "hlidani-deti.firebasestorage.app",
+  messagingSenderId: "341315828209",
+  appId: "1:341315828209:web:18ac58d16e43244c47ac50"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// ---- USERS CONFIG ----
+// PINy jsou uloženy ve Firestore v kolekci config/pins
+// Výchozí PINy: admin=1234, ostatní=0000 (změň je přes Firestore!)
+const USERS = {
+  'admin': { name: 'Vojta & Eva', role: 'Rodiče', emoji: '👨‍👩‍👧‍👦' },
+  'babicka-vera': { name: 'Babička Věra & Děda Petr', role: 'Hlídající', emoji: '👵' },
+  'babicka-petra': { name: 'Babička Petra & Děda Pavel', role: 'Hlídající', emoji: '👴👵' },
+  'babicka-pavla': { name: 'Babička Pavla', role: 'Hlídající', emoji: '👵' },
+};
+
+const GUARDIAN_NAMES = {
+  'babicka-vera': 'Babička Věra & Děda Petr',
+  'babicka-petra': 'Babička Petra & Děda Pavel',
+  'babicka-pavla': 'Babička Pavla',
+};
+
+// Default PINy - budou načteny z Firestore
+let PINS = {
+  'admin': '1234',
+  'babicka-vera': '1111',
+  'babicka-petra': '2222',
+  'babicka-pavla': '3333',
+};
+
+// Načti PINy z Firestore
+async function loadPins() {
+  try {
+    const doc = await db.collection('config').doc('pins').get();
+    if (doc.exists) {
+      PINS = { ...PINS, ...doc.data() };
+    } else {
+      // Vytvoř výchozí PINy
+      await db.collection('config').doc('pins').set(PINS);
+    }
+  } catch(e) {
+    console.log('Nelze načíst PINy, používám výchozí');
+  }
+}
+
+loadPins();
+
+// ---- STATE ----
+let currentUser = null;
+let selectedChildren = [];
+let selectedGuardian = null;
+let pinInput = '';
+let unsub = null;
+
+// ---- LOGIN ----
+function selectUser(userId) {
+  currentUser = userId;
+  document.querySelectorAll('.login-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('card-' + userId).classList.add('selected');
+  document.getElementById('pinSection').style.display = 'block';
+  document.getElementById('pinLabel').textContent = 'Zadej PIN pro ' + USERS[userId].name;
+  pinInput = '';
+  updateDots();
+  document.getElementById('pinError').style.display = 'none';
+}
+
+function pinKey(k) {
+  if (pinInput.length >= 4) return;
+  pinInput += k;
+  updateDots();
+  if (pinInput.length === 4) checkPin();
+}
+
+function pinDel() {
+  pinInput = pinInput.slice(0, -1);
+  updateDots();
+}
+
+function updateDots() {
+  for (let i = 0; i < 4; i++) {
+    document.getElementById('dot' + i).classList.toggle('filled', i < pinInput.length);
+  }
+}
+
+function checkPin() {
+  setTimeout(() => {
+    if (pinInput === PINS[currentUser]) {
+      login();
+    } else {
+      document.getElementById('pinError').style.display = 'block';
+      pinInput = '';
+      updateDots();
+      // Shake animation
+      document.querySelector('.pin-section').style.animation = 'none';
+      setTimeout(() => {
+        pinInput = '';
+        updateDots();
+      }, 100);
+    }
+  }, 200);
+}
+
+function login() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+
+  const u = USERS[currentUser];
+  document.getElementById('topEmoji').textContent = u.emoji;
+  document.getElementById('topName').textContent = u.name;
+  document.getElementById('topRole').textContent = u.role;
+
+  if (currentUser === 'admin') {
+    document.getElementById('adminTabs').style.display = 'flex';
+    document.getElementById('tab-nova-content').style.display = 'block';
+    document.getElementById('tab-prehled-content').style.display = 'none';
+    document.getElementById('tab-nastaveni-content').style.display = 'none';
+    document.getElementById('tab-kalendar-content').style.display = 'none';
+    document.getElementById('guardianView').style.display = 'none';
+    setTodayDate();
+    loadAdminOverview();
+  } else {
+    document.getElementById('adminTabs').style.display = 'none';
+    document.getElementById('tab-nova-content').style.display = 'none';
+    document.getElementById('tab-prehled-content').style.display = 'none';
+    document.getElementById('tab-nastaveni-content').style.display = 'none';
+    document.getElementById('tab-kalendar-content').style.display = 'none';
+    document.getElementById('guardianView').style.display = 'block';
+    document.getElementById('guardianRequests').style.display = 'block';
+    document.getElementById('guardianPinChange').style.display = 'none';
+    document.getElementById('guardianRequests').innerHTML = '<div class="loading">Načítám...</div>';
+    loadGuardianRequests();
+  }
+}
+
+function logout() {
+  if (unsub) { unsub(); unsub = null; }
+  currentUser = null;
+  pinInput = '';
+  selectedChildren = [];
+  selectedGuardian = null;
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('pinSection').style.display = 'none';
+  document.querySelectorAll('.login-card').forEach(c => c.classList.remove('selected'));
+}
+
+// ---- TABS ----
+function switchTab(tab) {
+  ['nova', 'kalendar', 'prehled', 'nastaveni'].forEach(t => {
+    document.getElementById('tab-' + t).classList.toggle('active', t === tab);
+    document.getElementById('tab-' + t + '-content').style.display = t === tab ? 'block' : 'none';
+  });
+  if (tab === 'prehled') loadAdminOverview();
+  if (tab === 'nastaveni') renderPinChangeAdmin();
+  if (tab === 'kalendar') initCalendar('admin');
+}
+
+function switchGuardianTab(tab) {
+  ['zadosti', 'kalendar', 'pin'].forEach(t => {
+    document.getElementById('gtab-' + t).classList.toggle('active', t === tab);
+  });
+  document.getElementById('guardianRequests').style.display = tab === 'zadosti' ? 'block' : 'none';
+  document.getElementById('guardianKalendar').style.display = tab === 'kalendar' ? 'block' : 'none';
+  document.getElementById('guardianPinChange').style.display = tab === 'pin' ? 'block' : 'none';
+  if (tab === 'pin') renderGuardianPinForm();
+  if (tab === 'kalendar') initCalendar('guardian');
+}
+
+// ---- PIN CHANGE (ADMIN) ----
+function renderPinChangeAdmin() {
+  const el = document.getElementById('pinChangeList');
+  const allUsers = [
+    { id: 'admin', name: '👨‍👩‍👧‍👦 Vojta & Eva' },
+    { id: 'babicka-vera', name: '👵 Babička Věra & Děda Petr' },
+    { id: 'babicka-petra', name: '👴👵 Babička Petra & Děda Pavel' },
+    { id: 'babicka-pavla', name: '👵 Babička Pavla' },
+  ];
+
+  el.innerHTML = allUsers.map(u => `
+    <div class="pin-change-row">
+      <div class="pin-change-name">${u.name}</div>
+      <div class="pin-change-inputs">
+        <input class="pin-input-field" type="password" inputmode="numeric" maxlength="4" 
+          id="newpin-${u.id}" placeholder="••••" pattern="[0-9]*">
+        <button class="btn-small" onclick="savePin('${u.id}', 'newpin-${u.id}')">Uložit</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ---- PIN CHANGE (GUARDIAN) ----
+function renderGuardianPinForm() {
+  const el = document.getElementById('guardianPinForm');
+  el.innerHTML = `
+    <div class="form-group">
+      <label class="form-label">Nový PIN (4 číslice)</label>
+      <input class="pin-input-field" type="password" inputmode="numeric" maxlength="4"
+        id="guardianNewPin" placeholder="••••" pattern="[0-9]*" style="width:100%; letter-spacing:8px; font-size:24px; padding:12px;">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Zopakuj PIN</label>
+      <input class="pin-input-field" type="password" inputmode="numeric" maxlength="4"
+        id="guardianNewPin2" placeholder="••••" pattern="[0-9]*" style="width:100%; letter-spacing:8px; font-size:24px; padding:12px;">
+    </div>
+    <button class="btn btn-primary" onclick="saveGuardianPin()">💾 Uložit nový PIN</button>
+  `;
+}
+
+async function saveGuardianPin() {
+  const p1 = document.getElementById('guardianNewPin').value;
+  const p2 = document.getElementById('guardianNewPin2').value;
+  if (p1.length !== 4 || !/^\d{4}$/.test(p1)) return showToast('PIN musí mít 4 číslice!');
+  if (p1 !== p2) return showToast('PINy se neshodují!');
+  await savePin(currentUser, null, p1);
+  document.getElementById('guardianNewPin').value = '';
+  document.getElementById('guardianNewPin2').value = '';
+}
+
+async function savePin(userId, inputId, directValue) {
+  const newPin = directValue || (inputId ? document.getElementById(inputId).value : '');
+  if (newPin.length !== 4 || !/^\d{4}$/.test(newPin)) return showToast('PIN musí mít 4 číslice!');
+  try {
+    await db.collection('config').doc('pins').set({ [userId]: newPin }, { merge: true });
+    PINS[userId] = newPin;
+    if (inputId) document.getElementById(inputId).value = '';
+    showToast('✅ PIN uložen!');
+  } catch(e) {
+    showToast('Chyba při ukládání 😢');
+  }
+}
+
+// ---- FORM ----
+function setTodayDate() {
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, '0');
+  const dd = String(today.getDate()).padStart(2, '0');
+  const todayStr = `${yyyy}-${mm}-${dd}`;
+  document.getElementById('reqDateFrom').value = todayStr;
+  document.getElementById('reqDateTo').value = todayStr;
+}
+
+function toggleChild(child) {
+  const el = document.getElementById('toggle-' + child);
+  if (selectedChildren.includes(child)) {
+    selectedChildren = selectedChildren.filter(c => c !== child);
+    el.classList.remove('selected');
+  } else {
+    selectedChildren.push(child);
+    el.classList.add('selected');
+  }
+}
+
+function selectGuardian(id) {
+  selectedGuardian = id;
+  document.querySelectorAll('.guardian-option').forEach(el => el.classList.remove('selected'));
+  document.getElementById('go-' + id).classList.add('selected');
+}
+
+async function sendRequest() {
+  const dateFrom = document.getElementById('reqDateFrom').value;
+  const dateTo = document.getElementById('reqDateTo').value;
+  const timeFrom = document.getElementById('reqTimeFrom').value;
+  const timeTo = document.getElementById('reqTimeTo').value;
+  const note = document.getElementById('reqNote').value.trim();
+
+  if (!dateFrom || !dateTo) return showToast('Vyber datum od a do!');
+  if (dateTo < dateFrom) return showToast('Datum do musí být po datumu od!');
+  if (!timeFrom || !timeTo) return showToast('Vyber čas!');
+  if (selectedChildren.length === 0) return showToast('Vyber děti!');
+  if (!selectedGuardian) return showToast('Vyber komu posíláš žádost!');
+
+  try {
+    await db.collection('requests').add({
+      dateFrom, dateTo, timeFrom, timeTo,
+      children: selectedChildren,
+      guardian: selectedGuardian,
+      note,
+      status: 'pending',
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    showToast('✅ Žádost odeslána!');
+    // Reset
+    selectedChildren = [];
+    selectedGuardian = null;
+    document.querySelectorAll('.child-toggle').forEach(el => el.classList.remove('selected'));
+    document.querySelectorAll('.guardian-option').forEach(el => el.classList.remove('selected'));
+    document.getElementById('reqNote').value = '';
+    document.getElementById('reqTimeFrom').value = '';
+    document.getElementById('reqTimeTo').value = '';
+    setTodayDate();
+  } catch(e) {
+    showToast('Chyba při odesílání 😢');
+    console.error(e);
+  }
+}
+
+// ---- ADMIN OVERVIEW ----
+function loadAdminOverview() {
+  const el = document.getElementById('adminOverview');
+  el.innerHTML = '<div class="loading">Načítám...</div>';
+
+  if (unsub) unsub();
+  unsub = db.collection('requests').orderBy('createdAt', 'desc').onSnapshot(snap => {
+    const requests = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderAdminOverview(requests);
+  });
+}
+
+function renderAdminOverview(requests) {
+  const el = document.getElementById('adminOverview');
+  if (requests.length === 0) {
+    el.innerHTML = `<div class="empty-state"><div class="empty-emoji">📭</div><div class="empty-text">Zatím žádné žádosti</div></div>`;
+    return;
+  }
+
+  // Group by guardian
+  const groups = {};
+  requests.forEach(r => {
+    if (!groups[r.guardian]) groups[r.guardian] = [];
+    groups[r.guardian].push(r);
+  });
+
+  let html = '';
+  Object.keys(groups).forEach(guardianId => {
+    const reqs = groups[guardianId];
+    const pending = reqs.filter(r => r.status === 'pending').length;
+    html += `<div class="guardian-group">
+      <div class="guardian-group-header">
+        ${GUARDIAN_NAMES[guardianId] || guardianId}
+        ${pending > 0 ? `<span class="count-badge">${pending} čeká</span>` : ''}
+      </div>`;
+    reqs.forEach(r => { html += renderRequestCard(r, true); });
+    html += `</div>`;
+  });
+
+  el.innerHTML = html;
+}
+
+// ---- GUARDIAN VIEW ----
+function loadGuardianRequests() {
+  const el = document.getElementById('guardianRequests');
+  el.innerHTML = '<div class="loading">Načítám...</div>';
+
+  if (unsub) unsub();
+  unsub = db.collection('requests')
+    .where('guardian', '==', currentUser)
+    .onSnapshot(snap => {
+      const requests = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+        .sort((a, b) => {
+          const ta = a.createdAt?.seconds || 0;
+          const tb = b.createdAt?.seconds || 0;
+          return tb - ta;
+        });
+      renderGuardianRequests(requests);
+    });
+}
+
+function renderGuardianRequests(requests) {
+  const el = document.getElementById('guardianRequests');
+
+  const pending = requests.filter(r => r.status === 'pending');
+  const others = requests.filter(r => r.status !== 'pending');
+
+  let html = '';
+
+  if (pending.length > 0) {
+    html += `<div class="section-label">⏳ Čekají na odpověď</div>`;
+    pending.forEach(r => { html += renderRequestCard(r, false); });
+  }
+
+  if (others.length > 0) {
+    html += `<div class="section-label" style="margin-top:16px;">📋 Vyřízené</div>`;
+    others.forEach(r => { html += renderRequestCard(r, false); });
+  }
+
+  if (requests.length === 0) {
+    html = `<div class="empty-state"><div class="empty-emoji">🌸</div><div class="empty-text">Žádné žádosti o hlídání</div></div>`;
+  }
+
+  el.innerHTML = html;
+}
+
+// ---- RENDER REQUEST CARD ----
+function renderRequestCard(r, isAdmin) {
+  const dateStr = r.dateFrom && r.dateTo && r.dateFrom !== r.dateTo
+    ? formatDate(r.dateFrom) + ' – ' + formatDate(r.dateTo)
+    : formatDate(r.dateFrom || r.date);
+  const statusLabel = { pending: '⏳ Čeká', approved: '✅ Schváleno', declined: '❌ Odmítnuto' }[r.status] || r.status;
+  const statusClass = { pending: 'status-pending', approved: 'status-approved', declined: 'status-declined' }[r.status] || '';
+
+  const childrenBadges = (r.children || []).map(c => {
+    const name = c === 'tonik' ? '🧒 Toník' : '👧 Eliška';
+    return `<span class="child-badge">${name}</span>`;
+  }).join('');
+
+  let actions = '';
+  if (!isAdmin && r.status === 'pending') {
+    actions = `<div class="request-actions">
+      <button class="btn btn-approve" onclick="respondRequest('${r.id}', 'approved')">✅ Schválím</button>
+      <button class="btn btn-decline" onclick="respondRequest('${r.id}', 'declined')">❌ Odmítám</button>
+    </div>`;
+  }
+  if (r.status === 'declined') {
+    actions += `<div class="request-actions">
+      <button class="btn btn-decline" onclick="deleteRequest('${r.id}')">🗑 Smazat žádost</button>
+    </div>`;
+  }
+
+  let icalBtn = '';
+  if (r.status === 'approved') {
+    const df = r.dateFrom || r.date;
+    const dt = r.dateTo || r.dateFrom || r.date;
+    icalBtn = `<button class="ical-btn" onclick="downloadIcal('${r.id}', '${df}', '${dt}', '${r.timeFrom}', '${r.timeTo}', '${(r.children||[]).join(',')}')">📅 Přidat do kalendáře</button>`;
+  }
+
+  const guardianInfo = isAdmin ? `<div class="request-guardian">👤 ${GUARDIAN_NAMES[r.guardian] || r.guardian}</div>` : '';
+
+  // WhatsApp share button (only for admin)
+  let waBtn = '';
+  if (isAdmin) {
+    const df = r.dateFrom || r.date || '';
+    const dt = r.dateTo || df;
+    const children = (r.children || []).map(c => c === 'tonik' ? 'Toník' : 'Eliška').join(' a ');
+    const guardian = GUARDIAN_NAMES[r.guardian] || r.guardian;
+    const dateRange = df === dt ? formatDate(df) : formatDate(df) + ' – ' + formatDate(dt);
+    const msg = encodeURIComponent(
+      `👶 Nová žádost o hlídání!
+
+📅 ${dateRange}
+🕐 ${r.timeFrom || '?'} – ${r.timeTo || '?'}
+👦 ${children}
+
+Prosím potvrď zda můžeš hlídat. Otevři appku: https://vojtaholas-png.github.io/hlidani-deti/hlidani.html`
+    );
+    waBtn = `<a class="whatsapp-btn" href="https://wa.me/?text=${msg}" target="_blank">📱 Sdílet přes WhatsApp</a>`;
+  }
+
+  return `<div class="request-item ${r.status}">
+    <div class="request-top">
+      <div>
+        <div class="request-date">${dateStr}</div>
+        <div class="request-time">🕐 ${r.timeFrom || '?'} – ${r.timeTo || '?'}</div>
+      </div>
+      <span class="status-badge ${statusClass}">${statusLabel}</span>
+    </div>
+    <div class="request-children">${childrenBadges}</div>
+    ${guardianInfo}
+    ${r.note ? `<div class="request-note">💬 ${r.note}</div>` : ''}
+    ${actions}
+    <div style="display:flex; flex-wrap:wrap; gap:0;">
+      ${icalBtn}
+      ${waBtn}
+    </div>
+  </div>`;
+}
+
+// ---- RESPOND ----
+async function respondRequest(id, status) {
+  try {
+    await db.collection('requests').doc(id).update({ status });
+    showToast(status === 'approved' ? '✅ Schváleno!' : '❌ Odmítnuto');
+  } catch(e) {
+    showToast('Chyba 😢');
+  }
+}
+
+// ---- ICAL ----
+function downloadIcal(id, dateFrom, dateTo, timeFrom, timeTo, childrenStr) {
+  const children = childrenStr.split(',').map(c => c === 'tonik' ? 'Toník' : 'Eliška').join(' a ');
+  const dtStart = dateFrom.replace(/-/g, '') + 'T' + (timeFrom || '0800').replace(':', '') + '00';
+  // End date for multi-day: dateTo + 1 day at end time
+  const endDateObj = new Date(dateTo);
+  endDateObj.setDate(endDateObj.getDate() + 1);
+  const endDateStr = endDateObj.toISOString().slice(0,10).replace(/-/g,'');
+  const dtEnd = (dateFrom === dateTo)
+    ? dateFrom.replace(/-/g, '') + 'T' + (timeTo || '1000').replace(':', '') + '00'
+    : endDateStr + 'T' + (timeTo || '1000').replace(':', '') + '00';
+  const now = new Date().toISOString().replace(/[-:.]/g, '').slice(0, 15) + 'Z';
+
+  const ical = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//Hlidani Deti//CS',
+    'BEGIN:VEVENT',
+    `UID:hlidani-${id}@hlidani-deti`,
+    `DTSTAMP:${now}`,
+    `DTSTART:${dtStart}`,
+    `DTEND:${dtEnd}`,
+    `SUMMARY:Hlídání – ${children}`,
+    `DESCRIPTION:Hlídání dětí: ${children}`,
+    'END:VEVENT',
+    'END:VCALENDAR'
+  ].join('\r\n');
+
+  const blob = new Blob([ical], { type: 'text/calendar' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `hlidani-${date}.ics`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ---- HELPERS ----
+function formatDate(dateStr) {
+  if (!dateStr) return '?';
+  const [y, m, d] = dateStr.split('-');
+  const days = ['neděle','pondělí','úterý','středa','čtvrtek','pátek','sobota'];
+  const months = ['ledna','února','března','dubna','května','června','července','srpna','září','října','listopadu','prosince'];
+  const date = new Date(y, m - 1, d);
+  return `${days[date.getDay()]} ${parseInt(d)}. ${months[m - 1]} ${y}`;
+}
+
+async function deleteRequest(id) {
+  if (!confirm('Opravdu smazat tuto žádost?')) return;
+  try {
+    await db.collection('requests').doc(id).delete();
+    showToast('🗑 Žádost smazána');
+  } catch(e) { showToast('Chyba 😢'); }
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ---- CALENDAR ----
+let calYear, calMonth, calRequests = [], calBusy = [], calUnsubReq = null, calUnsubBusy = null;
+
+function initCalendar(mode) {
+  const now = new Date();
+  calYear = now.getFullYear();
+  calMonth = now.getMonth();
+  const targetEl = mode === 'admin' ? 'adminCalendar' : 'guardianCalendar';
+  document.getElementById(targetEl).innerHTML = '<div class="loading">Načítám...</div>';
+
+  // Load requests
+  let reqQuery = db.collection('requests');
+  if (mode === 'guardian') reqQuery = reqQuery.where('guardian', '==', currentUser);
+
+  if (calUnsubReq) calUnsubReq();
+  calUnsubReq = reqQuery.onSnapshot(snap => {
+    calRequests = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderCalendar(mode);
+  });
+
+  // Load busy slots
+  if (calUnsubBusy) calUnsubBusy();
+  let busyQuery = db.collection('busy');
+  if (mode === 'guardian') busyQuery = busyQuery.where('guardian', '==', currentUser);
+  calUnsubBusy = busyQuery.onSnapshot(snap => {
+    calBusy = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderCalendar(mode);
+  });
+}
+
+function renderCalendar(mode) {
+  const targetEl = mode === 'admin' ? 'adminCalendar' : 'guardianCalendar';
+  const el = document.getElementById(targetEl);
+  if (!el) return;
+
+  const today = new Date();
+  const firstDay = new Date(calYear, calMonth, 1);
+  const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+  // Start on Monday (0=Sun → shift)
+  let startDow = firstDay.getDay(); // 0=Sun
+  startDow = startDow === 0 ? 6 : startDow - 1; // Mon=0
+
+  const monthNames = ['Leden','Únor','Březen','Duben','Květen','Červen','Červenec','Srpen','Září','Říjen','Listopad','Prosinec'];
+
+  // Build day data map
+  const dayMap = {}; // "YYYY-MM-DD" -> {pending, approved, busy:[]}
+
+  calRequests.forEach(r => {
+    if (!r.dateFrom) return;
+    const from = new Date(r.dateFrom);
+    const to = new Date(r.dateTo || r.dateFrom);
+    for (let d = new Date(from); d <= to; d.setDate(d.getDate() + 1)) {
+      const key = dateToKey(d);
+      if (!dayMap[key]) dayMap[key] = { pending: false, approved: false, busy: [] };
+      if (r.status === 'pending') dayMap[key].pending = true;
+      if (r.status === 'approved') dayMap[key].approved = true;
+    }
+  });
+
+  calBusy.forEach(b => {
+    if (!b.dateFrom) return;
+    const from = new Date(b.dateFrom);
+    const to = new Date(b.dateTo || b.dateFrom);
+    for (let d = new Date(from); d <= to; d.setDate(d.getDate() + 1)) {
+      const key = dateToKey(d);
+      if (!dayMap[key]) dayMap[key] = { pending: false, approved: false, busy: [] };
+      dayMap[key].busy.push(b);
+    }
+  });
+
+  let html = `
+    <div class="card">
+      <div class="cal-nav">
+        <button class="cal-nav-btn" onclick="calPrev('${mode}')">‹</button>
+        <div class="cal-month-label">${monthNames[calMonth]} ${calYear}</div>
+        <button class="cal-nav-btn" onclick="calNext('${mode}')">›</button>
+      </div>
+      <div class="cal-legend">
+        <div class="cal-legend-item"><div class="cal-dot pending"></div> Čeká</div>
+        <div class="cal-legend-item"><div class="cal-dot approved"></div> Schváleno</div>
+        <div class="cal-legend-item"><div class="cal-dot busy"></div> Obsazeno</div>
+      </div>
+      <div class="cal-grid">
+        <div class="cal-day-name">Po</div>
+        <div class="cal-day-name">Út</div>
+        <div class="cal-day-name">St</div>
+        <div class="cal-day-name">Čt</div>
+        <div class="cal-day-name">Pá</div>
+        <div class="cal-day-name">So</div>
+        <div class="cal-day-name">Ne</div>
+  `;
+
+  // Empty cells before first day
+  for (let i = 0; i < startDow; i++) {
+    html += '<div class="cal-day empty"></div>';
+  }
+
+  for (let day = 1; day <= daysInMonth; day++) {
+    const dateObj = new Date(calYear, calMonth, day);
+    const key = dateToKey(dateObj);
+    const isToday = dateObj.toDateString() === today.toDateString();
+    const data = dayMap[key] || {};
+
+    let classes = 'cal-day';
+    if (isToday) classes += ' today';
+    if (data.pending) classes += ' has-pending';
+    if (data.approved) classes += ' has-approved';
+    if ((data.busy||[]).length > 0) classes += ' has-busy';
+
+    let dots = '';
+    if (data.pending) dots += '<div class="cal-dot pending"></div>';
+    if (data.approved) dots += '<div class="cal-dot approved"></div>';
+    if ((data.busy||[]).length > 0) dots += '<div class="cal-dot busy"></div>';
+
+    html += `<div class="${classes}" onclick="openDayModal('${key}', '${mode}')">
+      ${day}
+      <div class="cal-dots">${dots}</div>
+    </div>`;
+  }
+
+  html += `</div>`;
+
+  // Add busy button for guardians
+  if (mode === 'guardian') {
+    html += `<button class="btn-add-busy" onclick="openAddBusyModal()">🚫 Přidat obsazenost</button>`;
+  }
+
+  html += `</div>`;
+  el.innerHTML = html;
+}
+
+function calPrev(mode) { calMonth--; if (calMonth < 0) { calMonth = 11; calYear--; } renderCalendar(mode); }
+function calNext(mode) { calMonth++; if (calMonth > 11) { calMonth = 0; calYear++; } renderCalendar(mode); }
+
+function dateToKey(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,'0');
+  const dd = String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${dd}`;
+}
+
+// Day modal
+function openDayModal(key, mode) {
+  const dayRequests = calRequests.filter(r => {
+    const from = r.dateFrom || r.date;
+    const to = r.dateTo || from;
+    return key >= from && key <= to;
+  });
+  const dayBusy = calBusy.filter(b => {
+    const from = b.dateFrom;
+    const to = b.dateTo || from;
+    return key >= from && key <= to;
+  });
+
+  const dateLabel = formatDate(key);
+  const GUARDIAN_NAMES_LOCAL = {
+    'babicka-vera': 'Babička Věra & Děda Petr',
+    'babicka-petra': 'Babička Petra & Děda Pavel',
+    'babicka-pavla': 'Babička Pavla',
+  };
+
+  let html = `<div class="modal-overlay" onclick="closeModal(event)" id="dayModal">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-date">📅 ${dateLabel}</div>`;
+
+  if (dayRequests.length > 0) {
+    html += `<div class="modal-section-label">Hlídání</div>`;
+    dayRequests.forEach(r => {
+      const children = (r.children||[]).map(c => c==='tonik'?'Toník':'Eliška').join(' a ');
+      const guardian = mode === 'admin' ? ` • ${GUARDIAN_NAMES_LOCAL[r.guardian]||r.guardian}` : '';
+      const statusLabel = {pending:'⏳ Čeká', approved:'✅ Schváleno', declined:'❌ Odmítnuto'}[r.status]||r.status;
+      html += `<div class="modal-event ${r.status}">
+        <div class="modal-event-title">${children}</div>
+        <div class="modal-event-sub">${r.timeFrom||'?'}–${r.timeTo||'?'}${guardian} • ${statusLabel}</div>
+      </div>`;
+    });
+  }
+
+  if (dayBusy.length > 0) {
+    html += `<div class="modal-section-label">Obsazeno</div>`;
+    dayBusy.forEach(b => {
+      const guardian = mode === 'admin' ? ` • ${GUARDIAN_NAMES_LOCAL[b.guardian]||b.guardian}` : '';
+      const canDelete = mode === 'guardian' && b.guardian === currentUser;
+      html += `<div class="modal-event busy">
+        <div class="modal-event-title">
+          🚫 ${b.label||'Obsazeno'}
+          ${canDelete ? `<button class="btn-delete-busy" onclick="deleteBusy('${b.id}')">🗑</button>` : ''}
+        </div>
+        <div class="modal-event-sub">${guardian}</div>
+      </div>`;
+    });
+  }
+
+  if (dayRequests.length === 0 && dayBusy.length === 0) {
+    html += `<div style="text-align:center; color:var(--text-light); padding:20px 0; font-weight:600;">Nic naplánováno</div>`;
+  }
+
+  if (mode === 'guardian') {
+    html += `<button class="btn-add-busy" onclick="openAddBusyModalForDate('${key}')">🚫 Přidat obsazenost tento den</button>`;
+  }
+
+  html += `<button class="modal-close" onclick="document.getElementById('dayModal').remove()">Zavřít</button>
+    </div>
+  </div>`;
+
+  document.body.insertAdjacentHTML('beforeend', html);
+}
+
+function closeModal(e) {
+  if (e.target.id === 'dayModal') document.getElementById('dayModal').remove();
+}
+
+// Add busy modal
+function openAddBusyModal() {
+  openAddBusyModalForDate('');
+}
+
+function openAddBusyModalForDate(prefillDate) {
+  if (document.getElementById('dayModal')) document.getElementById('dayModal').remove();
+  const html = `<div class="modal-overlay" id="busyModal">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-date">🚫 Přidat obsazenost</div>
+      <div class="form-group">
+        <label class="form-label">Popis (nepovinné)</label>
+        <input type="text" class="form-input" id="busyLabel" placeholder="Dovolená, lékař, návštěva...">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Datum od – do</label>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <input type="date" class="form-input" id="busyFrom" value="${prefillDate}">
+          <span style="color:var(--text-light); font-weight:700; flex-shrink:0;">–</span>
+          <input type="date" class="form-input" id="busyTo" value="${prefillDate}">
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="saveBusy()" style="margin-top:8px;">💾 Uložit</button>
+      <button class="modal-close" onclick="document.getElementById('busyModal').remove()" style="margin-top:8px;">Zrušit</button>
+    </div>
+  </div>`;
+  document.body.insertAdjacentHTML('beforeend', html);
+}
+
+async function saveBusy() {
+  const label = document.getElementById('busyLabel').value.trim() || 'Obsazeno';
+  const dateFrom = document.getElementById('busyFrom').value;
+  const dateTo = document.getElementById('busyTo').value;
+  if (!dateFrom || !dateTo) return showToast('Vyber datum!');
+  if (dateTo < dateFrom) return showToast('Datum do musí být po od!');
+  try {
+    await db.collection('busy').add({
+      guardian: currentUser, label, dateFrom, dateTo,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    document.getElementById('busyModal').remove();
+    showToast('✅ Obsazenost přidána!');
+  } catch(e) { showToast('Chyba 😢'); }
+}
+
+async function deleteBusy(id) {
+  try {
+    await db.collection('busy').doc(id).delete();
+    if (document.getElementById('dayModal')) document.getElementById('dayModal').remove();
+    showToast('🗑 Odstraněno');
+  } catch(e) { showToast('Chyba 😢'); }
+}
+
+
+// PWA Service Worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  });
+}
+</script>
+</body>
+</html>
